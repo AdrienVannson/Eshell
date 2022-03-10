@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "cpp.h"
 
 int main()
@@ -10,5 +11,9 @@ int main()
         printf("╬═╬ ");
         char command[1024];
         scanf("%s", command);
+
+        if (!strcmp(command, "exit")) {
+            return 0;
+        }
     }
 }
