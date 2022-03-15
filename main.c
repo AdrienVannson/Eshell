@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "cpp.h"
 
 int main()
@@ -14,6 +15,18 @@ int main()
 
         if (!strcmp(command, "exit")) {
             return 0;
+        } else { // Execute a command
+            const int pid = fork();
+
+            if (pid == 0) { // Child process
+                char *filename = command;
+
+                execl(filename, filename, (char*)NULL);
+                printf("Error: can't execute %s\n", filename);
+                return 0;
+            } else {
+                printf("Child created: %d\n", pid);
+            }
         }
     }
 }
