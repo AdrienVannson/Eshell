@@ -1,11 +1,26 @@
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "cpp.h"
 
+void kill_process()
+{
+    printf("KILL\n");
+}
+
+void suspend_process()
+{
+    printf("SUSPEND\n");
+}
+
 int main()
 {
     printf("Welcome in ÉShell!\n");
+
+    // Connect signals
+    signal(SIGTSTP, suspend_process);
+    signal(SIGINT, kill_process);
 
     while (true) {
         // Show a ladder (ÉShell) on the left of the screen
