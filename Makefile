@@ -1,3 +1,3 @@
 bin/eshell: main.c
 	mkdir -p bin
-	gcc -Wall -Wextra main.c -o bin/eshell
+	gcc -g -Wall -Wextra main.c processes.c -o bin/eshell
