@@ -1,18 +1,11 @@
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "cpp.h"
-
-void kill_process()
-{
-    printf("KILL\n");
-}
-
-void suspend_process()
-{
-    printf("SUSPEND\n");
-}
+#include "processes.h"
 
 int main()
 {
@@ -25,10 +18,17 @@ int main()
     while (true) {
         // Show a ladder (ÉShell) on the left of the screen
         printf("╬═╬ ");
-        char command[1024];
-        scanf("%s", command);
 
-        if (!strcmp(command, "exit")) {
+        // Read and parse a command
+        char* command = NULL;
+        size_t command_length = 0;
+        getline(&command, &command_length, stdin);
+
+        char* command_name = strtok(command, " \t\n");
+
+        if (command_name == NULL) { // Empty line
+            continue;
+        } else if (!strcmp(command_name, "exit")) { // Exit
             return 0;
         } else { // Execute a command
             const int pid = fork();
@@ -43,5 +43,7 @@ int main()
                 printf("Child created: %d\n", pid);
             }
         }
+
+        free(command);
     }
 }
