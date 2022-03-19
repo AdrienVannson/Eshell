@@ -7,4 +7,4 @@ Le sous-dossier `tests` contient des programmes simples permettant de tester le 
 
 ### Environnement
 
-Une variable d'environnement peut être affichée avec `echo $VAR`. Par exemple, `echo $PATH` affiche la valeur de la variable d'environnement `PATH`.
+Une variable d'environnement peut être affichée avec `echo $VAR`. Par exemple, `echo $PATH` affiche la valeur de la variable d'environnement `PATH`. L'environnement complet peut être affiché avec la commande `env`.

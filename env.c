@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "env.h"
 
@@ -16,11 +17,9 @@ void set_value_to_env(char* name, char *value)
 {
     for (int i = 0; i < MAX_ENV_SIZE; i++) {
         if (env[i].key == NULL) {
-            env[i].key = malloc((1 + strlen(name)) * sizeof(char));
-            strcpy(env[i].key, name);
-
-            env[i].value = malloc((1 + strlen(value)) * sizeof(char));
-            strcpy(env[i].value, value);
+            env[i].key = strdup(name);
+            env[i].value = strdup(value);
+            return;
         }
     }
 }
@@ -33,6 +32,15 @@ char* get_value_from_env(char* name)
         }
     }
     return 0;
+}
+
+void print_env()
+{
+    for (int i = 0; i < MAX_ENV_SIZE; i++) {
+        if (env[i].key) {
+            printf("%s=%s\n", env[i].key, env[i].value);
+        }
+    }
 }
 
 void free_env()

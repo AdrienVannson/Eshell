@@ -71,7 +71,9 @@ int main()
         if (command_name == NULL) { // Empty line
         } else if (!strcmp(command_name, "exit")) { // Exit
             is_over = true;
-        } else if (!strcmp(command_name, "echo")) {
+        } else if (!strcmp(command_name, "env")) {
+            print_env();
+        } else if (!strcmp(command_name, "echo")) { // Show a variable
             char* var_name = strtok(NULL, TOKEN_SEPARATORS);
 
             if (var_name[0] != '$') {
