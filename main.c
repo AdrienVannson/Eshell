@@ -25,6 +25,16 @@ void signal_received(const int signal)
     }
 }
 
+void run_in_foreground(const int pid)
+{
+    set_foreground_process(pid);
+
+    // Wait until the process terminates
+    while (waitpid(pid, NULL, 0) == -1) {}
+
+    set_foreground_process(-1);
+}
+
 int main()
 {
     // Set the defaut value of the PATH
@@ -128,9 +138,7 @@ int main()
                     printf("Error: can't execute %s\n", file);
                     exit(0);
                 } else {
-                    set_foreground_process(pid);
-                    waitpid(pid, NULL, 0);
-                    set_foreground_process(-1);
+                    run_in_foreground(pid);
                 }
 
                 free(file);
