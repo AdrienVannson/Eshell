@@ -3,17 +3,36 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <errno.h>
 
 #include "cpp.h"
 #include "processes.h"
+
+void signal_received(const int signal)
+{
+    switch (signal) {
+    case SIGINT:
+        kill_process();
+        break;
+
+    case SIGTSTP:
+        suspend_process();
+        break;
+    }
+}
 
 int main()
 {
     printf("Welcome in ÉShell!\n");
 
     // Connect signals
-    signal(SIGTSTP, suspend_process);
-    signal(SIGINT, kill_process);
+    struct sigaction sa;
+    sa.sa_handler = signal_received;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGTSTP, &sa, NULL);
 
     while (true) {
         // Show a ladder (ÉShell) on the left of the screen
@@ -22,7 +41,12 @@ int main()
         // Read and parse a command
         char* command = NULL;
         size_t command_length = 0;
-        getline(&command, &command_length, stdin);
+
+        // A syscall occured during the getline
+        if (getline(&command, &command_length, stdin) == -1) {
+            clearerr(stdin);
+            continue;
+        }
 
         char* command_name = strtok(command, " \t\n");
 
@@ -34,13 +58,12 @@ int main()
             const int pid = fork();
 
             if (pid == 0) { // Child process
-                char *filename = command;
-
-                execl(filename, filename, (char*)NULL);
-                printf("Error: can't execute %s\n", filename);
+                execl(command_name, command_name, (char*)NULL);
+                printf("Error: can't execute %s\n", command_name);
                 return 0;
             } else {
                 printf("Child created: %d\n", pid);
+                wait(NULL);
             }
         }
 
