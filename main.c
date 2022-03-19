@@ -50,7 +50,9 @@ int main()
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTSTP, &sa, NULL);
 
-    while (true) {
+    bool is_over = false;
+
+    while (!is_over) {
         // Show a ladder (ÉShell) on the left of the screen
         printf("╬═╬ ");
 
@@ -68,7 +70,7 @@ int main()
 
         if (command_name == NULL) { // Empty line
         } else if (!strcmp(command_name, "exit")) { // Exit
-            return 0;
+            is_over = true;
         } else if (!strcmp(command_name, "echo")) {
             char* var_name = strtok(NULL, TOKEN_SEPARATORS);
 
@@ -83,22 +85,53 @@ int main()
                 }
             }
         } else { // Execute a command
-            const int pid = fork();
+            char* path = strdup(get_value_from_env("PATH"));
+            char* file = NULL;
 
-            if (pid == 0) { // Child process
-                // The syscalls are sent to all the processes in the same process
-                // group. Since we do not want the signals sent to the EShell to
-                // be also sent to the other processes, we move the other processes
-                // to a new group.
-                setpgid(0, 0);
-
-                execl(command_name, command_name, (char*)NULL);
-                printf("Error: can't execute %s\n", command_name);
-                return 0;
+            if (access(command_name, F_OK) == 0) {
+                file = strdup(command_name);
             } else {
-                set_foreground_process(pid);
-                waitpid(pid, NULL, 0);
-                set_foreground_process(-1);
+                char* folder = strtok(path, ":");
+                while (folder) {
+                    char* current_file = malloc((strlen(folder) + strlen(command_name) + 2) * sizeof(char));
+                    strcpy(current_file, folder);
+                    current_file[strlen(folder)] = '/';
+                    strcpy(current_file + strlen(folder) + 1, command_name);
+
+                    if (access(current_file, F_OK) == 0) {
+                        file = strdup(current_file);
+                        break;
+                    }
+
+                    free(current_file);
+                    folder = strtok(NULL, ":");
+                }
+            }
+
+            free(path);
+
+            if (file == NULL) {
+                printf("Command not found\n");
+            } else {
+                const int pid = fork();
+
+                if (pid == 0) { // Child process
+                    // The syscalls are sent to all the processes in the same process
+                    // group. Since we do not want the signals sent to the EShell to
+                    // be also sent to the other processes, we move the other processes
+                    // to a new group.
+                    setpgid(0, 0);
+
+                    execl(file, file, (char*)NULL);
+                    printf("Error: can't execute %s\n", file);
+                    exit(0);
+                } else {
+                    set_foreground_process(pid);
+                    waitpid(pid, NULL, 0);
+                    set_foreground_process(-1);
+                }
+
+                free(file);
             }
         }
 
