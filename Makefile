@@ -6,8 +6,8 @@ clean:
 bin:
 	  mkdir -p bin
 
-bin/eshell: main.c bin
-		gcc -g -Wall -Wextra main.c processes.c -o bin/eshell
+bin/eshell: main.c processes.c processes.h env.c env.h bin
+		gcc -g -Wall -Wextra main.c processes.c env.c -o bin/eshell
 
 bin/hello: tests/hello.c bin
 		gcc -g -Wall -Wextra tests/hello.c -o bin/hello
