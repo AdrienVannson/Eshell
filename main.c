@@ -58,6 +58,12 @@ int main()
             const int pid = fork();
 
             if (pid == 0) { // Child process
+                // The syscalls are sent to all the processes in the same process
+                // group. Since we do not want the signals sent to the EShell to
+                // be also sent to the other processes, we move the other processes
+                // to a new group.
+                setpgid(0, 0);
+
                 execl(command_name, command_name, (char*)NULL);
                 printf("Error: can't execute %s\n", command_name);
                 return 0;
