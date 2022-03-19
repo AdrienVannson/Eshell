@@ -51,7 +51,6 @@ int main()
         char* command_name = strtok(command, " \t\n");
 
         if (command_name == NULL) { // Empty line
-            continue;
         } else if (!strcmp(command_name, "exit")) { // Exit
             return 0;
         } else { // Execute a command
