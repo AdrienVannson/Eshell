@@ -7,7 +7,10 @@
 #include <errno.h>
 
 #include "cpp.h"
+#include "env.h"
 #include "processes.h"
+
+#define TOKEN_SEPARATORS " \n\t"
 
 void signal_received(const int signal)
 {
@@ -24,6 +27,19 @@ void signal_received(const int signal)
 
 int main()
 {
+    // Set the defaut value of the PATH
+    set_value_to_env("PATH",
+        "/usr/local/sbin:"
+        "/usr/local/bin:"
+        "/usr/sbin:"
+        "/usr/bin:"
+        "/sbin:"
+        "/bin:"
+        "/usr/games:"
+        "/usr/local/games:"
+        "/snap/bin"
+    );
+
     printf("Welcome in ÉShell!\n");
 
     // Connect signals
@@ -48,11 +64,24 @@ int main()
             continue;
         }
 
-        char* command_name = strtok(command, " \t\n");
+        char* command_name = strtok(command, TOKEN_SEPARATORS);
 
         if (command_name == NULL) { // Empty line
         } else if (!strcmp(command_name, "exit")) { // Exit
             return 0;
+        } else if (!strcmp(command_name, "echo")) {
+            char* var_name = strtok(NULL, TOKEN_SEPARATORS);
+
+            if (var_name[0] != '$') {
+                printf("The name of the variable must start with a dollar\n");
+            } else {
+                char *val = get_value_from_env(var_name + 1);
+                if (val == NULL) {
+                    printf("Unknown variable\n");
+                } else {
+                    printf("%s\n", val);
+                }
+            }
         } else { // Execute a command
             const int pid = fork();
 
@@ -75,4 +104,6 @@ int main()
 
         free(command);
     }
+
+    free_env();
 }
