@@ -68,8 +68,9 @@ int main()
                 printf("Error: can't execute %s\n", command_name);
                 return 0;
             } else {
-                printf("Child created: %d\n", pid);
-                wait(NULL);
+                set_foreground_process(pid);
+                waitpid(pid, NULL, 0);
+                set_foreground_process(-1);
             }
         }
 
