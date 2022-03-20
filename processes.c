@@ -9,11 +9,14 @@
 
 #define MAX_PROCESS_COUNT 1000
 
+// The processes in the list may no longer exist
 struct {
     int pid;
     bool is_suspended;
     char* command; // Command used to create the process
 } processes[MAX_PROCESS_COUNT];
+
+int next_process = 0; // Where to place a new process in the array
 
 // PID of the process running in the foreground,
 // or -1 if no process is running
@@ -22,7 +25,7 @@ int pid_foreground = -1;
 // Delete the processes that no longer exists
 void update_process_states()
 {
-    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+    for (int i = 0; i < next_process; i++) {
         if (processes[i].pid != 0) {
             int result;
             do {
@@ -40,30 +43,20 @@ void update_process_states()
 // Add a process to the process list
 void add_process(const int pid, const char* command)
 {
-    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
-        if (processes[i].pid == 0) {
-            processes[i].pid = pid;
-            processes[i].is_suspended = false;
-            processes[i].command = strdup(command);
-            return;
-        }
-    }
+    processes[next_process].pid = pid;
+    processes[next_process].is_suspended = false;
+    processes[next_process].command = strdup(command);
+    next_process++;
 }
 
 // Send a signal to a process, and update the status of the process
 void send_signal(const int pid, const int signal)
 {
-    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+    for (int i = 0; i < next_process; i++) {
         if (processes[i].pid == pid) {
             kill(pid, signal);
 
             switch(signal) {
-            case SIGINT:
-                // Remove the process from the list
-                free(processes[i].command);
-                processes[i].pid = 0;
-                break;
-
             case SIGTSTP:
                 processes[i].is_suspended = true;
                 break;
@@ -105,7 +98,7 @@ void print_process_list()
 {
     update_process_states();
 
-    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+    for (int i = 0; i < next_process; i++) {
         if (processes[i].pid != 0) {
             printf("State: %s, ", processes[i].is_suspended ? "Suspended" : "Running");
             printf("PID: %d, Command: %s\n", processes[i].pid, processes[i].command);
@@ -116,7 +109,7 @@ void print_process_list()
 // Kill all the processes and free the memory
 void kill_all_processes()
 {
-    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+    for (int i = 0; i < next_process; i++) {
         if (processes[i].pid != 0) {
             kill(processes[i].pid, SIGINT);
             free(processes[i].command);
