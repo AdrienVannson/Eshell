@@ -129,7 +129,7 @@ int main()
                 }
             }
 
-        } else if (!strcmp(command_name, "kill")) {
+        } else if (!strcmp(command_name, "kill")) { // Send a signal to a process
             char* signal = strtok(NULL, TOKEN_SEPARATORS);
             char* pid = strtok(NULL, TOKEN_SEPARATORS);
 
