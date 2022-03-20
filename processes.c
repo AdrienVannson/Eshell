@@ -19,6 +19,24 @@ struct {
 // or -1 if no process is running
 int pid_foreground = -1;
 
+// Delete the processes that no longer exists
+void update_process_states()
+{
+    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+        if (processes[i].pid != 0) {
+            int result;
+            do {
+                result = waitpid(processes[i].pid, NULL, WNOHANG);
+            } while (result > 0);
+
+            if (result == -1) { // The process no longer exists
+                processes[i].pid = 0;
+                free(processes[i].command);
+            }
+        }
+    }
+}
+
 // Add a process to the process list
 void add_process(const int pid, const char* command)
 {
@@ -70,8 +88,7 @@ void run_in_foreground(const int pid)
 void kill_foreground_process()
 {
     if (pid_foreground != -1) {
-        kill(pid_foreground, SIGINT);
-        printf("Killed\n");
+        send_signal(pid_foreground, SIGINT);
     }
 }
 
@@ -79,14 +96,15 @@ void kill_foreground_process()
 void suspend_foreground_process()
 {
     if (pid_foreground != -1) {
-        kill(pid_foreground, SIGTSTP);
-        printf("Suspended\n");
+        send_signal(pid_foreground, SIGTSTP);
     }
 }
 
 // Show the list of the processes created by ÉShell
 void print_process_list()
 {
+    update_process_states();
+
     for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
         if (processes[i].pid != 0) {
             printf("State: %s, ", processes[i].is_suspended ? "Suspended" : "Running");
@@ -102,6 +120,8 @@ void kill_all_processes()
         if (processes[i].pid != 0) {
             kill(processes[i].pid, SIGINT);
             free(processes[i].command);
+            processes[i].pid = 0;
         }
     }
 }
+;
