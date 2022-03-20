@@ -100,16 +100,21 @@ int main()
         char* command_name = strtok(command, TOKEN_SEPARATORS);
 
         if (command_name == NULL) { // Empty line
+
         } else if (!strcmp(command_name, "exit")) { // Exit
             is_over = true;
+
         } else if (!strcmp(command_name, "env")) { // Show the environnement
             print_env();
+
         } else if (!strcmp(command_name, "ps")) { // Show all the processes
             print_process_list();
+
         } else if (!strcmp(command_name, "export")) { // Set a variable
             char* var_name = strtok(NULL, " =");
             char* value = strtok(NULL, "\n");
             set_value_to_env(var_name, value);
+
         } else if (!strcmp(command_name, "echo")) { // Show a variable
             char* var_name = strtok(NULL, TOKEN_SEPARATORS);
 
@@ -123,6 +128,7 @@ int main()
                     printf("%s\n", val);
                 }
             }
+
         } else if (!strcmp(command_name, "kill")) {
             char* signal = strtok(NULL, TOKEN_SEPARATORS);
             char* pid = strtok(NULL, TOKEN_SEPARATORS);
@@ -138,6 +144,7 @@ int main()
             } else {
                 printf("Invalid signal. Valid signals are SIGINT, SIGTSTP and SIGCONT\n");
             }
+
         } else { // Execute a command
             char* file = get_file(command_name);
 
