@@ -16,11 +16,11 @@ void signal_received(const int signal)
 {
     switch (signal) {
     case SIGINT:
-        kill_process();
+        kill_foreground_process();
         break;
 
     case SIGTSTP:
-        suspend_process();
+        suspend_foreground_process();
         break;
     }
 }
@@ -134,6 +134,15 @@ int main()
         } else { // Execute a command
             char* file = get_file(command_name);
 
+            bool is_in_foreground = true;
+            char* arg = strtok(NULL, TOKEN_SEPARATORS);
+            while (arg != NULL) {
+                if (!strcmp(arg, "&")) {
+                    is_in_foreground = false;
+                }
+                arg = strtok(NULL, TOKEN_SEPARATORS);
+            }
+
             if (file == NULL) {
                 printf("Command not found\n");
             } else {
@@ -150,7 +159,11 @@ int main()
                     printf("Error: can't execute %s\n", file);
                     exit(0);
                 } else {
-                    run_in_foreground(pid);
+                    add_process(pid, command);
+
+                    if (is_in_foreground) {
+                        run_in_foreground(pid);
+                    }
                 }
 
                 free(file);
@@ -161,4 +174,5 @@ int main()
     }
 
     free_env();
+    kill_all_processes();
 }
