@@ -35,6 +35,37 @@ void run_in_foreground(const int pid)
     set_foreground_process(-1);
 }
 
+// Search a file in the current directory and in the directories
+// listed in $PATH
+char* get_file(const char* filename)
+{
+    char* path = strdup(get_value_from_env("PATH"));
+    char* file = NULL;
+
+    if (access(filename, F_OK) == 0) {
+        file = strdup(filename);
+    } else {
+        char* folder = strtok(path, ":");
+        while (folder) {
+            char* current_file = malloc((strlen(folder) + strlen(filename) + 2) * sizeof(char));
+            strcpy(current_file, folder);
+            current_file[strlen(folder)] = '/';
+            strcpy(current_file + strlen(folder) + 1, filename);
+
+            if (access(current_file, F_OK) == 0) {
+                file = strdup(current_file);
+                break;
+            }
+
+            free(current_file);
+            folder = strtok(NULL, ":");
+        }
+    }
+
+    free(path);
+    return file;
+}
+
 int main()
 {
     // Set the defaut value of the PATH
@@ -101,30 +132,7 @@ int main()
                 }
             }
         } else { // Execute a command
-            char* path = strdup(get_value_from_env("PATH"));
-            char* file = NULL;
-
-            if (access(command_name, F_OK) == 0) {
-                file = strdup(command_name);
-            } else {
-                char* folder = strtok(path, ":");
-                while (folder) {
-                    char* current_file = malloc((strlen(folder) + strlen(command_name) + 2) * sizeof(char));
-                    strcpy(current_file, folder);
-                    current_file[strlen(folder)] = '/';
-                    strcpy(current_file + strlen(folder) + 1, command_name);
-
-                    if (access(current_file, F_OK) == 0) {
-                        file = strdup(current_file);
-                        break;
-                    }
-
-                    free(current_file);
-                    folder = strtok(NULL, ":");
-                }
-            }
-
-            free(path);
+            char* file = get_file(command_name);
 
             if (file == NULL) {
                 printf("Command not found\n");
