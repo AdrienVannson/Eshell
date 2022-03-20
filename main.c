@@ -30,7 +30,7 @@ void run_in_foreground(const int pid)
     set_foreground_process(pid);
 
     // Wait until the process terminates
-    while (waitpid(pid, NULL, 0) == -1) {}
+    while (waitpid(pid, NULL, WUNTRACED) == -1) {}
 
     set_foreground_process(-1);
 }

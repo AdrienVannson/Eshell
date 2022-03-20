@@ -49,7 +49,10 @@ void kill_foreground_process()
 // Suspend the process running in the foreground
 void suspend_foreground_process()
 {
-    printf("SUSPEND\n");
+    if (pid_foreground != -1) {
+        kill(pid_foreground, SIGTSTP);
+        printf("Suspended\n");
+    }
 }
 
 // Fill all the processes and free the memory
