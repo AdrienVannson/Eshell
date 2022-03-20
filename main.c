@@ -25,16 +25,6 @@ void signal_received(const int signal)
     }
 }
 
-void run_in_foreground(const int pid)
-{
-    set_foreground_process(pid);
-
-    // Wait until the process terminates
-    while (waitpid(pid, NULL, WUNTRACED) == -1) {}
-
-    set_foreground_process(-1);
-}
-
 // Search a file in the current directory and in the directories
 // listed in $PATH
 char* get_file(const char* filename)

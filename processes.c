@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 
 #include "cpp.h"
 #include "processes.h"
@@ -57,10 +58,12 @@ void send_signal(const int pid, const int signal)
     }
 }
 
-// Set the PID of the process running in the foreground
-void set_foreground_process(const int pid)
+// Wait until the process terminates
+void run_in_foreground(const int pid)
 {
     pid_foreground = pid;
+    while (waitpid(pid, NULL, WUNTRACED) == -1) {}
+    pid_foreground = -1;
 }
 
 // Kill the process running in the foreground

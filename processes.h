@@ -7,8 +7,8 @@ void add_process(const int pid, const char* command);
 // Send a signal to a process, and update the status of the process
 void send_signal(const int pid, const int signal);
 
-// Set the PID of the process running in the foreground
-void set_foreground_process(const int pid);
+// Wait until the process terminates
+void run_in_foreground(const int pid);
 
 // Kill the process running in the foreground
 void kill_foreground_process();
