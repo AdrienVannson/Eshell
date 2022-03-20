@@ -55,6 +55,17 @@ void suspend_foreground_process()
     }
 }
 
+// Show the list of the processes created by ÉShell
+void print_process_list()
+{
+    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+        if (processes[i].pid != 0) {
+            printf("State: %s, ", processes[i].is_suspended ? "Suspended" : "Running");
+            printf("PID: %d, Command: %s\n", processes[i].pid, processes[i].command);
+        }
+    }
+}
+
 // Fill all the processes and free the memory
 void kill_all_processes()
 {

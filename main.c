@@ -112,8 +112,10 @@ int main()
         if (command_name == NULL) { // Empty line
         } else if (!strcmp(command_name, "exit")) { // Exit
             is_over = true;
-        } else if (!strcmp(command_name, "env")) {
+        } else if (!strcmp(command_name, "env")) { // Show the environnement
             print_env();
+        } else if (!strcmp(command_name, "ps")) { // Show all the processes
+            print_process_list();
         } else if (!strcmp(command_name, "export")) { // Set a variable
             char* var_name = strtok(NULL, " =");
             char* value = strtok(NULL, "\n");
