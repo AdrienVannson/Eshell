@@ -103,6 +103,17 @@ void suspend_foreground_process()
     }
 }
 
+// Restart the last process stopped
+void restart_last_stop()
+{
+    for (int i = next_process - 1; i >= 0; i--) {
+        if (processes[i].is_suspended) {
+            send_signal(processes[i].pid, SIGCONT);
+            return;
+        }
+    }
+}
+
 // Show the list of the processes created by ÉShell
 void print_process_list()
 {

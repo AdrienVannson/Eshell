@@ -110,6 +110,9 @@ int main()
         } else if (!strcmp(command_name, "ps")) { // Show all the processes
             print_process_list();
 
+        } else if (!strcmp(command_name, "bg")) { // Restart the last process stopped
+            restart_last_stop();
+
         } else if (!strcmp(command_name, "export")) { // Set a variable
             char* var_name = strtok(NULL, " =");
             char* value = strtok(NULL, "\n");

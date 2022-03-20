@@ -16,6 +16,9 @@ void kill_foreground_process();
 // Suspend the process running in the foreground
 void suspend_foreground_process();
 
+// Restart the last process stopped
+void restart_last_stop();
+
 // Show the list of the processes created by ÉShell
 void print_process_list();
 
