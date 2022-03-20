@@ -66,7 +66,7 @@ void print_process_list()
     }
 }
 
-// Fill all the processes and free the memory
+// Kill all the processes and free the memory
 void kill_all_processes()
 {
     for (int i = 0; i < MAX_PROCESS_COUNT; i++) {

@@ -16,7 +16,7 @@ void suspend_foreground_process();
 // Show the list of the processes created by ÉShell
 void print_process_list();
 
-// Fill all the processes and free the memory
+// Kill all the processes and free the memory
 void kill_all_processes();
 
 #endif // PROCESSES_H
