@@ -133,6 +133,21 @@ int main()
                     printf("%s\n", val);
                 }
             }
+        } else if (!strcmp(command_name, "kill")) {
+            char* signal = strtok(NULL, TOKEN_SEPARATORS);
+            char* pid = strtok(NULL, TOKEN_SEPARATORS);
+
+            if (signal == NULL || pid == NULL) {
+                printf("Not enough parameters. Example: kill SIGINT pid\n");
+            } else if (!strcmp(signal, "SIGINT")) {
+                send_signal(atoi(pid), SIGINT);
+            } else if (!strcmp(signal, "SIGTSTP")) {
+                send_signal(atoi(pid), SIGTSTP);
+            } else if (!strcmp(signal, "SIGCONT")) {
+                send_signal(atoi(pid), SIGCONT);
+            } else {
+                printf("Invalid signal. Valid signals are SIGINT, SIGTSTP and SIGCONT\n");
+            }
         } else { // Execute a command
             char* file = get_file(command_name);
 

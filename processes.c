@@ -31,6 +31,32 @@ void add_process(const int pid, const char* command)
     }
 }
 
+// Send a signal to a process, and update the status of the process
+void send_signal(const int pid, const int signal)
+{
+    for (int i = 0; i < MAX_PROCESS_COUNT; i++) {
+        if (processes[i].pid == pid) {
+            kill(pid, signal);
+
+            switch(signal) {
+            case SIGINT:
+                // Remove the process from the list
+                free(processes[i].command);
+                processes[i].pid = 0;
+                break;
+
+            case SIGTSTP:
+                processes[i].is_suspended = true;
+                break;
+
+            case SIGCONT:
+                processes[i].is_suspended = false;
+                break;
+            }
+        }
+    }
+}
+
 // Set the PID of the process running in the foreground
 void set_foreground_process(const int pid)
 {
