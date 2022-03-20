@@ -10,11 +10,13 @@
 #define MAX_PROCESS_COUNT 1000
 
 // The processes in the list may no longer exist
-struct {
+typedef struct {
     int pid;
     bool is_suspended;
     char* command; // Command used to create the process
-} processes[MAX_PROCESS_COUNT];
+} Process;
+
+Process processes[MAX_PROCESS_COUNT];
 
 int next_process = 0; // Where to place a new process in the array
 
@@ -59,12 +61,20 @@ void send_signal(const int pid, const int signal)
             switch(signal) {
             case SIGTSTP:
                 processes[i].is_suspended = true;
+
+                // Move the process to the end of the array
+                memcpy(processes + next_process, processes + i, sizeof(Process));
+                memset(processes + i, 0, sizeof(Process));
+                next_process++;
+
                 break;
 
             case SIGCONT:
                 processes[i].is_suspended = false;
                 break;
             }
+
+            return;
         }
     }
 }
