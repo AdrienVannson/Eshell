@@ -16,7 +16,7 @@ struct {
 void set_value_to_env(char* name, char *value)
 {
     for (int i = 0; i < MAX_ENV_SIZE; i++) {
-        if (env[i].key == NULL) {
+        if (env[i].key == NULL || !strcmp(env[i].key, name)) {
             env[i].key = strdup(name);
             env[i].value = strdup(value);
             return;
