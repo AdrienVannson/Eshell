@@ -149,6 +149,12 @@ int main()
             }
 
         } else { // Execute a command
+            bool nohup = false;
+            if (!strcmp(command_name, "nohup")) {
+                nohup = true;
+                command_name = strtok(NULL, TOKEN_SEPARATORS);
+            }
+
             char* file = get_file(command_name);
 
             bool is_in_foreground = true;
@@ -175,7 +181,7 @@ int main()
                     execl(file, file, (char*)NULL);
                     printf("Error: can't execute %s\n", file);
                     exit(0);
-                } else {
+                } else if (!nohup) {
                     add_process(pid, command);
 
                     if (is_in_foreground) {
