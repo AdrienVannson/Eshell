@@ -99,7 +99,7 @@ int main()
 
         char* command_name = strtok(command, TOKEN_SEPARATORS);
 
-        if (command_name == NULL) { // Empty line
+        if (command_name == NULL || command_name[0] == '#') { // Empty line or comment
 
         } else if (!strcmp(command_name, "exit")) { // Exit
             is_over = true;
