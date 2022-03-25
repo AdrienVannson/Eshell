@@ -1,4 +1,4 @@
-all: bin/eshell bin/hello bin/count bin/background
+all: bin/eshell bin/hello bin/count bin/background bin/count10
 
 clean:
 		rm -r bin
@@ -17,5 +17,8 @@ bin/background: tests/background.c | bin
 
 bin/count: tests/count.c | bin
 		gcc -g -Wall -Wextra tests/count.c -o bin/count
+
+bin/count10: tests/count10.c | bin
+		gcc -g -Wall -Wextra tests/count10.c -o bin/count10
 
 .PHONY: all clean
