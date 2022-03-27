@@ -135,7 +135,6 @@ int main()
                 send_signal(atoi(pid), SIGTSTP);
             } else if (!strcmp(signal, "SIGCONT")) {
                 send_signal(atoi(pid), SIGCONT);
-                run_in_foreground(atoi(pid));
             } else {
                 printf("Invalid signal. Valid signals are SIGINT, SIGTSTP and SIGCONT\n");
             }
