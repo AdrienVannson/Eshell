@@ -25,7 +25,7 @@ void signal_received(const int signal)
     }
 }
 
-// Search a file in the current directory and in the directories
+// Research a file in the current directory and in the directories
 // listed in $PATH
 char* get_file(const char* filename)
 {
@@ -35,7 +35,8 @@ char* get_file(const char* filename)
     if (access(filename, F_OK) == 0) {
         file = strdup(filename);
     } else {
-        char* folder = strtok(path, ":");
+        char* remaining_path = path;
+        char* folder = strsep(&remaining_path, ":");
         while (folder) {
             char* current_file = malloc((strlen(folder) + strlen(filename) + 2) * sizeof(char));
             strcpy(current_file, folder);
@@ -43,12 +44,12 @@ char* get_file(const char* filename)
             strcpy(current_file + strlen(folder) + 1, filename);
 
             if (access(current_file, F_OK) == 0) {
-                file = strdup(current_file);
+                file = current_file;
                 break;
             }
 
             free(current_file);
-            folder = strtok(NULL, ":");
+            folder = strsep(&remaining_path, ":");
         }
     }
 
@@ -157,18 +158,31 @@ int main()
 
             char* file = get_file(command_name);
 
-            bool is_in_foreground = true;
-            char* arg = strtok(NULL, TOKEN_SEPARATORS);
-            while (arg != NULL) {
-                if (!strcmp(arg, "&")) {
-                    is_in_foreground = false;
-                }
-                arg = strtok(NULL, TOKEN_SEPARATORS);
-            }
-
             if (file == NULL) {
                 printf("Command not found\n");
             } else {
+                // Get the list of the arguments
+                char** arg_list = malloc(sizeof(char*));
+                int arg_count = 1;
+                arg_list[0] = file;
+
+                bool is_in_foreground = true;
+                char* arg = strtok(NULL, TOKEN_SEPARATORS);
+                while (arg != NULL) {
+                    if (!strcmp(arg, "&")) {
+                        is_in_foreground = false;
+                    } else {
+                        arg_count++;
+                        arg_list = realloc(arg_list, arg_count * sizeof(char*));
+                        arg_list[arg_count - 1] = arg;
+                    }
+                    arg = strtok(NULL, TOKEN_SEPARATORS);
+                }
+
+                // Add a NULL pointer at the end of the array
+                arg_list = realloc(arg_list, (arg_count + 1) * sizeof(char*));
+                arg_list[arg_count] = NULL;
+
                 const int pid = fork();
 
                 if (pid == 0) { // Child process
@@ -178,7 +192,7 @@ int main()
                     // to a new group.
                     setpgid(0, 0);
 
-                    execl(file, file, (char*)NULL);
+                    execv(file, arg_list);
                     printf("Error: can't execute %s\n", file);
                     exit(0);
                 } else if (!nohup) {
@@ -190,6 +204,7 @@ int main()
                 }
 
                 free(file);
+                free(arg_list);
             }
         }
 
