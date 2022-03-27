@@ -6,22 +6,22 @@ clean:
 bin:
 	  mkdir -p bin
 
-bin/eshell: main.c processes.c processes.h env.c env.h | bin
-		gcc -g -Wall -Wextra main.c processes.c env.c -o bin/eshell
+bin/eshell: src/main.c src/processes.c src/processes.h src/env.c src/env.h | bin
+		gcc -Wall -Wextra src/main.c src/processes.c src/env.c -o bin/eshell
 
 bin/args: tests/args.c | bin
-		gcc -g -Wall -Wextra tests/args.c -o bin/args
+		gcc -Wall -Wextra tests/args.c -o bin/args
 
 bin/hello: tests/hello.c | bin
-		gcc -g -Wall -Wextra tests/hello.c -o bin/hello
+		gcc -Wall -Wextra tests/hello.c -o bin/hello
 
 bin/background: tests/background.c | bin
-		gcc -g -Wall -Wextra tests/background.c -o bin/background
+		gcc -Wall -Wextra tests/background.c -o bin/background
 
 bin/count: tests/count.c | bin
-		gcc -g -Wall -Wextra tests/count.c -o bin/count
+		gcc -Wall -Wextra tests/count.c -o bin/count
 
 bin/count10: tests/count10.c | bin
-		gcc -g -Wall -Wextra tests/count10.c -o bin/count10
+		gcc -Wall -Wextra tests/count10.c -o bin/count10
 
 .PHONY: all clean
