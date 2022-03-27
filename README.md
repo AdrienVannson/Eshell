@@ -31,8 +31,7 @@ Les fonctionnalités d'ÉShell peuvent être testées à l'aide des commandes ci
 # Gestion de l'environnement
 echo $PATH
 ls
-export PATH=/home/
-# Ne fonctionne plus
+export PATH=/bin/
 ls
 
 # Ajout d'une variable à l'environnement
@@ -40,5 +39,6 @@ env
 export MY_VAR=test
 env
 
+# Fermeture du programme
 exit
 ```

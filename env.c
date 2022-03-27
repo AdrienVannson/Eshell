@@ -27,11 +27,11 @@ void set_value_to_env(char* name, char *value)
 char* get_value_from_env(char* name)
 {
     for (int i = 0; i < MAX_ENV_SIZE; i++) {
-        if (!strcmp(name, env[i].key)) {
+        if (env[i].key && !strcmp(name, env[i].key)) {
             return env[i].value;
         }
     }
-    return 0;
+    return NULL;
 }
 
 void print_env()

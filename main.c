@@ -29,28 +29,31 @@ void signal_received(const int signal)
 // listed in $PATH
 char* get_file(const char* filename)
 {
-    char* path = strdup(get_value_from_env("PATH"));
+    if (access(filename, F_OK) == 0) {
+        return strdup(filename);
+    }
+
+    char* path = get_value_from_env("PATH");
+    if (path == NULL) return NULL;
+    path = strdup(path);
+
     char* file = NULL;
 
-    if (access(filename, F_OK) == 0) {
-        file = strdup(filename);
-    } else {
-        char* remaining_path = path;
-        char* folder = strsep(&remaining_path, ":");
-        while (folder) {
-            char* current_file = malloc((strlen(folder) + strlen(filename) + 2) * sizeof(char));
-            strcpy(current_file, folder);
-            current_file[strlen(folder)] = '/';
-            strcpy(current_file + strlen(folder) + 1, filename);
+    char* remaining_path = path;
+    char* folder = strsep(&remaining_path, ":");
+    while (folder) {
+        char* current_file = malloc((strlen(folder) + strlen(filename) + 2) * sizeof(char));
+        strcpy(current_file, folder);
+        current_file[strlen(folder)] = '/';
+        strcpy(current_file + strlen(folder) + 1, filename);
 
-            if (access(current_file, F_OK) == 0) {
-                file = current_file;
-                break;
-            }
-
-            free(current_file);
-            folder = strsep(&remaining_path, ":");
+        if (access(current_file, F_OK) == 0) {
+            file = current_file;
+            break;
         }
+
+        free(current_file);
+        folder = strsep(&remaining_path, ":");
     }
 
     free(path);
@@ -59,19 +62,6 @@ char* get_file(const char* filename)
 
 int main()
 {
-    // Set the defaut value of the PATH
-    set_value_to_env("PATH",
-        "/usr/local/sbin:"
-        "/usr/local/bin:"
-        "/usr/sbin:"
-        "/usr/bin:"
-        "/sbin:"
-        "/bin:"
-        "/usr/games:"
-        "/usr/local/games:"
-        "/snap/bin"
-    );
-
     printf("Welcome in ÉShell!\n");
 
     // Connect signals
