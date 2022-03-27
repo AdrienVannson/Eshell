@@ -1,4 +1,4 @@
-all: bin/eshell bin/hello bin/count bin/background bin/count10
+all: bin/eshell bin/args bin/hello bin/count bin/background bin/count10
 
 clean:
 		rm -r bin
@@ -8,6 +8,9 @@ bin:
 
 bin/eshell: main.c processes.c processes.h env.c env.h | bin
 		gcc -g -Wall -Wextra main.c processes.c env.c -o bin/eshell
+
+bin/args: tests/args.c | bin
+		gcc -g -Wall -Wextra tests/args.c -o bin/args
 
 bin/hello: tests/hello.c | bin
 		gcc -g -Wall -Wextra tests/hello.c -o bin/hello
